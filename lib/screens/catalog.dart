@@ -103,14 +103,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
             const SizedBox(height: 12),
 
-            // Сітка картки ігор (2x2)
+            // Сітка картки ігор (Компактні пропорції 0.98)
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
                 padding: const EdgeInsets.all(16),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.85,
+                childAspectRatio: 0.98, // Збільшено співвідношення сторін, щоб зменшити висоту картки
                 children: [
                   _buildGameCard('Catan', 'Strategy', '3–4p · ~90m', minP: '3', maxP: '4', duration: '90'),
                   _buildGameCard('Ticket to Ride', 'Family', '2–5p · ~60m', minP: '2', maxP: '5', duration: '60'),
@@ -146,7 +146,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
           Stack(
             children: [
               Container(
-                height: 90,
+                height: 80, // Зменшено з 90 для компактності
                 decoration: BoxDecoration(
                   color: Colors.blue.shade50,
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
@@ -209,7 +209,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(8.0), // Оптимізовані відступи
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -219,7 +219,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
@@ -235,7 +235,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   info,
                   style: TextStyle(color: Colors.grey.shade500, fontSize: 10),
@@ -248,16 +248,16 @@ class _CatalogScreenState extends State<CatalogScreen> {
     );
   }
 
-  // Викликається при натисканні на "+ Add"
+  // Викликається при натисканні на "+ Add" (всі поля порожні)
   void _showAddGameBottomSheet(BuildContext context) {
     _showGameFormBottomSheet(
       context,
       isEdit: false,
       title: '',
-      minP: '2',
-      maxP: '4',
-      duration: '60',
-      genre: 'Strategy',
+      minP: '',
+      maxP: '',
+      duration: '',
+      genre: null, // Порожній вибір за замовчуванням
     );
   }
 
@@ -269,7 +269,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
         required String minP,
         required String maxP,
         required String duration,
-        required String genre,
+        required String? genre,
       }) {
     showModalBottomSheet(
       context: context,
@@ -305,7 +305,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               const SizedBox(height: 16),
               const Text('Title', style: TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 6),
-              _buildModalTextField(title),
+              _buildModalTextField(title, hint: 'e.g. Catan'),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -315,7 +315,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       children: [
                         const Text('Min Players', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        _buildModalTextField(minP),
+                        _buildModalTextField(minP, hint: '2'),
                       ],
                     ),
                   ),
@@ -326,7 +326,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       children: [
                         const Text('Max Players', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        _buildModalTextField(maxP),
+                        _buildModalTextField(maxP, hint: '4'),
                       ],
                     ),
                   ),
@@ -341,7 +341,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       children: [
                         const Text('Duration (min)', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        _buildModalTextField(duration),
+                        _buildModalTextField(duration, hint: '60'),
                       ],
                     ),
                   ),
@@ -354,11 +354,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         const SizedBox(height: 6),
                         DropdownButtonFormField<String>(
                           value: genre,
+                          hint: const Text('Select genre', style: TextStyle(fontSize: 13, color: Colors.grey)),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(color: Colors.grey),
                             ),
                           ),
                           items: const [
@@ -412,10 +413,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
     );
   }
 
-  Widget _buildModalTextField(String initialValue) {
+  Widget _buildModalTextField(String initialValue, {String? hint}) {
     return TextFormField(
-      initialValue: initialValue,
+      initialValue: initialValue.isEmpty ? null : initialValue,
       decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/widgets/delete_confirmation_dialog.dart';
+
 class SessionsScreen extends StatefulWidget {
   final bool autoOpenLogModal;
 
@@ -13,12 +14,31 @@ class SessionsScreen extends StatefulWidget {
 }
 
 class _SessionsScreenState extends State<SessionsScreen> {
+  final List<String> allAvailablePlayers = [
+    'Alex M.',
+    'Jamie K.',
+    'Sam R.',
+    'Riley P.',
+    'Casey L.',
+    'Cordf D.',
+    'Dam R.',
+    'Jordan T.',
+    'Taylor S.',
+  ];
+
   @override
   void initState() {
     super.initState();
     if (widget.autoOpenLogModal) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showLogSessionBottomSheet(context, isEdit: false, title: 'Catan', duration: '60', winner: 'Select', players: ['Alex M.', 'Jamie K.', 'Sam R.', 'Riley P.']);
+        _showLogSessionBottomSheet(
+          context,
+          isEdit: false,
+          title: null,
+          duration: '',
+          winner: null,
+          initialPlayers: [],
+        );
       });
     }
   }
@@ -44,10 +64,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     onPressed: () => _showLogSessionBottomSheet(
                       context,
                       isEdit: false,
-                      title: 'Catan',
-                      duration: '60',
-                      winner: 'Select',
-                      players: ['Alex M.', 'Jamie K.', 'Sam R.', 'Riley P.'],
+                      title: null,
+                      duration: '',
+                      winner: null,
+                      initialPlayers: [],
                     ),
                     icon: const Icon(Icons.add, size: 18, color: Colors.white),
                     label: const Text('Log', style: TextStyle(color: Colors.white)),
@@ -167,7 +187,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
   }
 
-  // Внутрішній метод побудови картки сесії
   Widget _buildSessionCard({
     required String title,
     required String dateDuration,
@@ -246,7 +265,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   title: title,
                   duration: duration,
                   winner: winner,
-                  players: players,
+                  initialPlayers: players,
                 ),
                 borderRadius: BorderRadius.circular(6),
                 child: Container(
@@ -280,14 +299,13 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
   }
 
-  // Модальне вікно створення/редагування сесії
   void _showLogSessionBottomSheet(
       BuildContext context, {
         required bool isEdit,
-        required String title,
+        required String? title,
         required String duration,
-        required String winner,
-        required List<String> players,
+        required String? winner,
+        required List<String> initialPlayers,
       }) {
     showModalBottomSheet(
       context: context,
@@ -296,241 +314,412 @@ class _SessionsScreenState extends State<SessionsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            left: 20,
-            right: 20,
-            top: 20,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isEdit ? 'Edit Session' : 'Log Session',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close, size: 20, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text('Game', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  value: title,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                  ),
-                  items: [
-                    DropdownMenuItem(value: title, child: Text(title, style: const TextStyle(fontSize: 13))),
-                    if (title != 'Catan') const DropdownMenuItem(value: 'Catan', child: Text('Catan', style: TextStyle(fontSize: 13))),
-                    if (title != 'Ticket to Ride') const DropdownMenuItem(value: 'Ticket to Ride', child: Text('Ticket to Ride', style: TextStyle(fontSize: 13))),
-                  ],
-                  onChanged: (val) {},
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Date', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                          const SizedBox(height: 6),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Duration (min)', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                          const SizedBox(height: 6),
-                          TextFormField(
-                            initialValue: duration,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text('Players', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ...players.map((p) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.blue.shade300),
-                      ),
-                      child: Text(p, style: const TextStyle(fontSize: 12, color: Color(0xFF1565C0))),
-                    )),
-                    const Icon(Icons.add_circle_outline, color: Color(0xFF1565C0), size: 28),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text('Scores', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 6),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Alex:12, Jamie:9..',
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text('Winner', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 6),
-                DropdownButtonFormField<String>(
-                  value: players.contains(winner) ? winner : 'Select',
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                  ),
-                  items: [
-                    const DropdownMenuItem(
-                      value: 'Select',
-                      child: Text('— Select winner —', style: TextStyle(fontSize: 13, color: Colors.grey)),
-                    ),
-                    ...players.map((p) => DropdownMenuItem(value: p, child: Text(p, style: const TextStyle(fontSize: 13)))),
-                  ],
-                  onChanged: (val) {},
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1565C0),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      isEdit ? 'Save Changes' : 'Log Session',
-                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return _SessionFormModal(
+          isEdit: isEdit,
+          initialTitle: title,
+          initialDuration: duration,
+          initialWinner: winner,
+          initialPlayers: initialPlayers,
+          allAvailablePlayers: allAvailablePlayers,
         );
       },
     );
   }
 
-  // Діалог видалення
   void _showDeleteDialog(BuildContext context, String title) {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+        return DeleteConfirmationDialog(
+          title: 'Delete Session?',
+          itemName: title,
+          onDelete: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _SessionFormModal extends StatefulWidget {
+  final bool isEdit;
+  final String? initialTitle;
+  final String initialDuration;
+  final String? initialWinner;
+  final List<String> initialPlayers;
+  final List<String> allAvailablePlayers;
+
+  const _SessionFormModal({
+    Key? key,
+    required this.isEdit,
+    required this.initialTitle,
+    required this.initialDuration,
+    required this.initialWinner,
+    required this.initialPlayers,
+    required this.allAvailablePlayers,
+  }) : super(key: key);
+
+  @override
+  State<_SessionFormModal> createState() => _SessionFormModalState();
+}
+
+class _SessionFormModalState extends State<_SessionFormModal> {
+  late String? selectedTitle;
+  late String? selectedWinner;
+  late List<String> selectedPlayers;
+
+  bool isPickerOpen = false;
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTitle = widget.initialTitle;
+    selectedWinner = widget.initialWinner;
+    selectedPlayers = List.from(widget.initialPlayers);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredPlayers = widget.allAvailablePlayers.where((player) {
+      return player.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: const BoxDecoration(color: Color(0xFFFFEBEE), shape: BoxShape.circle),
-                  child: const Icon(Icons.delete_outline, color: Color(0xFFE53935), size: 28),
+                Text(
+                  widget.isEdit ? 'Edit Session' : 'Log Session',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
-                const Text('Delete Session?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: const TextStyle(fontSize: 13, color: Colors.black54),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, size: 20, color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text('Game', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: selectedTitle,
+              hint: Text(
+                'Select game',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+              ),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade400),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'Catan', child: Text('Catan', style: TextStyle(fontSize: 13))),
+                DropdownMenuItem(value: 'Ticket to Ride', child: Text('Ticket to Ride', style: TextStyle(fontSize: 13))),
+                DropdownMenuItem(value: 'Azul', child: Text('Azul', style: TextStyle(fontSize: 13))),
+                DropdownMenuItem(value: 'Pandemic', child: Text('Pandemic', style: TextStyle(fontSize: 13))),
+              ],
+              onChanged: (val) {
+                setState(() => selectedTitle = val);
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const TextSpan(text: 'Are you sure you want to delete '),
-                      TextSpan(text: '"$title"', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
-                      const TextSpan(text: '?\nThis action cannot be undone.'),
+                      const Text('Date', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'e.g. Sep 17, 2026',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          side: BorderSide(color: Colors.blue.shade200),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Duration (min)', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        initialValue: widget.initialDuration.isEmpty ? null : widget.initialDuration,
+                        decoration: InputDecoration(
+                          hintText: '60',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
-                        child: const Text('Cancel', style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // ЕЛЕГАНТНА СЕКЦІЯ ГРАВЦІВ В ОДИНОМУ ТОНІ МАКЕТУ
+            const Text('Players', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ...selectedPlayers.map((p) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        p,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF1565C0),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPlayers.remove(p);
+                            if (selectedWinner == p) selectedWinner = null;
+                          });
+                        },
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Color(0xFF1565C0),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+
+                // Стильна кнопка "+" / "-"
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isPickerOpen = !isPickerOpen;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: isPickerOpen ? const Color(0xFF1565C0) : Colors.blue.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isPickerOpen ? Icons.close : Icons.add,
+                      color: isPickerOpen ? Colors.white : const Color(0xFF1565C0),
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // ПРЕМІУМ ПАНЕЛЬ ПОШУКУ (Біле тло, точна рамка, без брудних сірих відтінків)
+            if (isPickerOpen) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFF1565C0).withOpacity(0.3), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade900.withOpacity(0.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      onChanged: (val) {
+                        setState(() {
+                          searchQuery = val;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search player...',
+                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                        prefixIcon: Icon(Icons.search, size: 18, color: Colors.blue.shade700),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        fillColor: const Color(0xFFF8FAFC),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE53935),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          elevation: 0,
+                    const SizedBox(height: 10),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 130),
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: filteredPlayers.map((player) {
+                            final isSelected = selectedPlayers.contains(player);
+                            return ChoiceChip(
+                              label: Text(player),
+                              selected: isSelected,
+                              onSelected: (bool checked) {
+                                setState(() {
+                                  if (checked) {
+                                    selectedPlayers.add(player);
+                                  } else {
+                                    selectedPlayers.remove(player);
+                                    if (selectedWinner == player) selectedWinner = null;
+                                  }
+                                });
+                              },
+                              selectedColor: const Color(0xFF1565C0),
+                              backgroundColor: Colors.white,
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: isSelected ? Colors.white : Colors.grey.shade800,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: BorderSide(
+                                  color: isSelected ? const Color(0xFF1565C0) : Colors.grey.shade300,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        child: const Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
                 ),
-              ],
+              ),
+            ],
+
+            const SizedBox(height: 12),
+            const Text('Scores', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 6),
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: 'e.g. Alex:12, Jamie:9..',
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 12),
+            const Text('Winner', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: selectedPlayers.contains(selectedWinner) ? selectedWinner : null,
+              hint: Text(
+                '— Select winner —',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+              ),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade400),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              items: selectedPlayers
+                  .map((p) => DropdownMenuItem(value: p, child: Text(p, style: const TextStyle(fontSize: 13))))
+                  .toList(),
+              onChanged: (val) {
+                setState(() => selectedWinner = val);
+              },
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1565C0),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  widget.isEdit ? 'Save Changes' : 'Log Session',
+                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -21,13 +21,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Заголовок
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
               child: Row(
                 children: [
                   IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                     icon: const Icon(Icons.arrow_back, color: Colors.black87),
                     onPressed: () => Navigator.pop(context),
                   ),
+                  const SizedBox(width: 5),
                   const Text(
                     'Profile & Security',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
